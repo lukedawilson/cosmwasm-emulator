@@ -36,7 +36,7 @@
         this.isValid = true
       },
       isInvalid () {
-        return !state.wasmBinary.name?.toLocaleLowerCase().endsWith('.wasm')
+        return !state.wasmBinary.name.toLocaleLowerCase().endsWith('.wasm')
       }
     },
     mounted() {
