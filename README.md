@@ -1,29 +1,12 @@
 # cosmwasm-emulator
 
-This template should help get you started developing with Vue 3 in Vite.
+An online emulator for running CosmWasm smart contracts without having to upload them to TestNet or spin up a local chain.
 
-## Recommended IDE Setup
+Powered by [cw-simulate](https://github.com/Terran-One/cw-simulate) from [Terran One](https://github.com/Terran-One).
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+## Running locally
 
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
 ```
