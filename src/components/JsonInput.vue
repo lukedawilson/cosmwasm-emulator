@@ -1,6 +1,6 @@
 <template>
   <codemirror
-    :placeholder="'{ ... }'"
+    :placeholder="placeholder"
     :autofocus="true"
     :indent-with-tab="true"
     :tab-size="2"
@@ -20,7 +20,7 @@
       Codemirror
     },
     setup() {
-      return { extensions: [json(), oneDark] }
+      return { extensions: [json(), oneDark], placeholder: '{ "enter some": "valid json" }' }
     },
     methods: {
       handleChange(value) {

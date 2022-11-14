@@ -10,6 +10,10 @@
     <div class="card-body">
       <h5 class="card-title">Upload your contract</h5>
 
+      <div v-if="error" class="alert alert-danger mt-4" role="alert">
+        File upload failed: {{error}}
+      </div>
+
       <p class="card-text">
         Please upload your compiled wasm binary below to get started.
         This code doesn't get sent anywhere - everything is done in the browser.
@@ -32,7 +36,8 @@
   export default {
     data () {
       return {
-        isValid: false
+        isValid: false,
+        error: ''
       }
     },
     methods: {
@@ -50,9 +55,11 @@
         function extractByteCode(contents) {
           if (typeof contents !== 'string')
             return contents
+
           const prefix = 'data:application/wasm;base64,'
           if (!contents.startsWith(prefix))
             throw new Error(`Malformed WASM source file`)
+
           return base64ToArrayBuffer(contents.substring(prefix.length))
         }
 
@@ -65,28 +72,31 @@
           if (!contents) {
             state.wasmBytecode = []
             this.isValid = false
+            this.error = 'File is empty'
             return;
           }
 
           try {
             state.wasmBytecode = Buffer.from(extractByteCode(contents));
             this.isValid = true
+            this.error = ''
           } catch (e) {
-            console.warn(e)
             state.wasmBytecode = []
             this.isValid = false
+            this.error = e.message ?? e
             return;
           }
         }
 
-        reader.onerror = () => {
+        reader.onerror = e => {
           state.wasmBytecode = []
           this.isValid = false
+          this.error = e.message ?? e
         }
       }
     },
     mounted() {
-      state.wasmBytecode = File
+      state.wasmBytecode = []
     }
   };
 </script>

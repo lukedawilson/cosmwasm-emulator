@@ -42,7 +42,7 @@
 <script>
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { sender, funds } from '../global'
+  import { sender, funds, formatResult } from '../global'
 
   export default {
     components: {
@@ -75,12 +75,12 @@
       },
       async doExecute() {
         const result = await state.app.wasm.executeContract(sender, funds, state.contractAddress, this.execute.message)
-        this.execute.response = JSON.stringify(result, null, 2)
+        this.execute.response = formatResult(result)
         this.execute.isSuccess = result.ok
       },
       async doQuery() {
         const result = await state.app.wasm.query(state.contractAddress, this.query.message)
-        this.query.response = JSON.stringify(result, null, 2)
+        this.query.response = formatResult(result)
         this.query.isSuccess = result.ok
       }
     }

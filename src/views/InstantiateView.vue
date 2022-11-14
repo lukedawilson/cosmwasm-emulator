@@ -25,7 +25,7 @@
   import { CWSimulateApp } from '@terran-one/cw-simulate'
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { sender, funds } from '../global'
+  import { sender, funds, formatResult } from '../global'
 
   export default {
     components: {
@@ -63,7 +63,7 @@
         if (!result.ok) {
           this.isValid = false
           this.isError = true
-          this.response = JSON.stringify(result, null, 2)
+          this.response = formatResult(result)
           return
         }
 
