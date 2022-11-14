@@ -7,16 +7,17 @@
         Please enter instantiate message JSON for the contract.
       </p>
 
-      <JsonInput />
+      <JsonInput v-on:change="handleChange($event)" />
 
       <div class="d-md-flex justify-content-md-end mt-4">
-        <router-link to="/instantiate" class="btn btn-primary">Next</router-link>
+        <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import { CWSimulateApp } from '@terran-one/cw-simulate'
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
 
@@ -26,11 +27,40 @@
     },
     data() {
       return {
-        instantiateResponse: ''
+        isValid: false,
+        message: {},
+        response: ''
       }
     },
-    mounted() {
-      console.log(state.wasmBinary)
+    methods: {
+      handleChange(message) {
+        try {
+          this.message = JSON.parse(message)
+          this.isValid = true
+        } catch {
+          this.isValid = false
+        }
+      },
+      async instantiate() {
+        const sender = 'terra1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu'
+        const funds = []
+        const wasmBytecode = state.wasmBytecode
+
+        state.app = new CWSimulateApp({
+          chainId: 'phoenix-1',
+          bech32Prefix: 'terra'
+        })
+
+        const codeId = state.app.wasm.create(sender, wasmBytecode)
+        const result = await state.app.wasm.instantiateContract(sender, funds, codeId, this.message)
+        if (!result.ok) {
+          this.isValid = false
+          return
+        }
+
+        state.contractAddress = result.val.events[0].attributes[0].value
+        this.$router.push('/execute-query')
+      }
     }
   };
 </script>

@@ -1,15 +1,11 @@
 <template>
   <codemirror
-    v-model="code"
-    :placeholder="placeholder"
+    :placeholder="'{ ... }'"
     :autofocus="true"
     :indent-with-tab="true"
     :tab-size="2"
     :extensions="extensions"
-    @ready="handleReady"
-    @change="log('change', $event)"
-    @focus="log('focus', $event)"
-    @blur="log('blur', $event)"
+    @change="handleChange($event)"
   />
 </template>
 
@@ -24,13 +20,13 @@
       Codemirror
     },
     setup() {
-      const placeholder = `{ "count": 0 }`
-      const extensions = [json(), oneDark]
-
-      return {
-        placeholder,
-        extensions,
-        log: console.log
+      return { extensions: [json(), oneDark] }
+    },
+    methods: {
+      handleChange(value) {
+        try {
+          this.$emit('change', value)
+        } catch {}
       }
     }
   })

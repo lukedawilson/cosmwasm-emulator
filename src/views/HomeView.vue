@@ -20,7 +20,7 @@
       </div>
 
       <div class="d-md-flex justify-content-md-end mt-4">
-        <router-link to="/instantiate" class="btn btn-primary" :class="{ disabled: isInvalid() }">Next</router-link>
+        <router-link to="/instantiate" class="btn btn-primary" :class="{ disabled: !isValid }">Next</router-link>
       </div>
     </div>
   </div>
@@ -30,17 +30,63 @@
   import state from '../state/state'
 
   export default {
+    data () {
+      return {
+        isValid: false
+      }
+    },
     methods: {
       saveWasm(e) {
-        state.wasmBinary = e.target.files[0]
-        this.isValid = true
-      },
-      isInvalid () {
-        return !state.wasmBinary.name.toLocaleLowerCase().endsWith('.wasm')
+        const base64ToArrayBuffer = (base64) => {
+          const binaryString = window.atob(base64)
+          const len = binaryString.length
+          const bytes = new Uint8Array(len)
+          for (let i = 0; i < len; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          return bytes.buffer;
+        }
+
+        function extractByteCode(contents) {
+          if (typeof contents !== 'string')
+            return contents
+          const prefix = 'data:application/wasm;base64,'
+          if (!contents.startsWith(prefix))
+            throw new Error(`Malformed WASM source file`)
+          return base64ToArrayBuffer(contents.substring(prefix.length))
+        }
+
+        const file = e.target.files[0]
+        const reader = new FileReader()
+        reader.readAsDataURL(file);
+
+        reader.onload = () => {
+          const contents = reader.result;
+          if (!contents) {
+            state.wasmBytecode = []
+            this.isValid = false
+            return;
+          }
+
+          try {
+            state.wasmBytecode = Buffer.from(extractByteCode(contents));
+            this.isValid = true
+          } catch (e) {
+            console.warn(e)
+            state.wasmBytecode = []
+            this.isValid = false
+            return;
+          }
+        }
+
+        reader.onerror = () => {
+          state.wasmBytecode = []
+          this.isValid = false
+        }
       }
     },
     mounted() {
-      state.wasmBinary = File
+      state.wasmBytecode = File
     }
   };
 </script>
