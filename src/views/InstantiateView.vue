@@ -15,7 +15,9 @@
       </div>
 
       <div class="d-md-flex justify-content-md-end mt-4">
-        <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next</button>
+        <router-link to="/" class="btn btn-secondary">&lsaquo;&lsaquo; Back to wasm upload</router-link>
+        &nbsp;
+        <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
       </div>
     </div>
   </div>

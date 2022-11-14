@@ -24,7 +24,7 @@
       </div>
 
       <div class="d-md-flex justify-content-md-end mt-4">
-        <router-link to="/instantiate" class="btn btn-primary" :class="{ disabled: !isValid }">Next</router-link>
+        <router-link to="/instantiate" class="btn btn-primary" :class="{ disabled: !isValid }">Next: instantiate contract &rsaquo;&rsaquo;</router-link>
       </div>
     </div>
   </div>
