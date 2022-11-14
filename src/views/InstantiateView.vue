@@ -9,6 +9,11 @@
 
       <JsonInput v-on:change="handleChange($event)" />
 
+      <div v-if="isError">
+        <label class="mt-4">Error response:</label>
+        <textarea readonly class="form-control text-danger" rows="10" v-model="response"></textarea>
+      </div>
+
       <div class="d-md-flex justify-content-md-end mt-4">
         <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next</button>
       </div>
@@ -20,6 +25,7 @@
   import { CWSimulateApp } from '@terran-one/cw-simulate'
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
+  import { sender, funds } from '../global'
 
   export default {
     components: {
@@ -28,12 +34,15 @@
     data() {
       return {
         isValid: false,
+        isError: false,
         message: {},
         response: ''
       }
     },
     methods: {
       handleChange(message) {
+        this.isError = false
+
         try {
           this.message = JSON.parse(message)
           this.isValid = true
@@ -42,8 +51,6 @@
         }
       },
       async instantiate() {
-        const sender = 'terra1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu'
-        const funds = []
         const wasmBytecode = state.wasmBytecode
 
         state.app = new CWSimulateApp({
@@ -55,11 +62,13 @@
         const result = await state.app.wasm.instantiateContract(sender, funds, codeId, this.message)
         if (!result.ok) {
           this.isValid = false
+          this.isError = true
+          this.response = JSON.stringify(result, null, 2)
           return
         }
 
         state.contractAddress = result.val.events[0].attributes[0].value
-        this.$router.push('/execute-query')
+        this.$router.push('/emulator')
       }
     }
   };
