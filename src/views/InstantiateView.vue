@@ -14,9 +14,8 @@
         <textarea readonly class="form-control text-danger" rows="10" v-model="response"></textarea>
       </div>
 
-      <div class="d-md-flex justify-content-md-end mt-4">
+      <div class="d-flex justify-content-between bd-highlight mt-4">
         <router-link to="/" class="btn btn-secondary">&lsaquo;&lsaquo; Back to wasm upload</router-link>
-        &nbsp;
         <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
       </div>
     </div>
