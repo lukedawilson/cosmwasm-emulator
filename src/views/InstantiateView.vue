@@ -7,7 +7,7 @@
         Please enter instantiate message JSON for the contract.
       </p>
 
-      <JsonInput v-on:change="handleChange($event)" />
+      <JsonInput v-on:change="handleChange($event)" :initialValue="initialValue" />
 
       <div v-if="isError">
         <label class="mt-4">Error response:</label>
@@ -28,6 +28,17 @@
   import state from '../state/state'
   import { sender, funds, formatResult } from '../global'
 
+  async function doInstantiate(message) {
+    const codeId = state.app.wasm.create(sender, state.wasmBytecode)
+    try {
+      return await state.app.wasm.instantiateContract(sender, funds, codeId, message)
+    } catch (e) {
+      return { val: e.message }
+    }
+  }
+
+  const errorMessageSearchString = 'missing field'
+
   export default {
     components: {
       JsonInput
@@ -37,7 +48,8 @@
         isValid: false,
         isError: false,
         message: {},
-        response: ''
+        response: '',
+        initialValue: ''
       }
     },
     methods: {
@@ -52,16 +64,22 @@
         }
       },
       async instantiate() {
-        const wasmBytecode = state.wasmBytecode
-
         state.app = new CWSimulateApp({
           chainId: 'phoenix-1',
           bech32Prefix: 'terra'
         })
 
-        const codeId = state.app.wasm.create(sender, wasmBytecode)
-        const result = await state.app.wasm.instantiateContract(sender, funds, codeId, this.message)
+        const result = await doInstantiate(this.message)
         if (!result.ok) {
+          // if the error is 'missing field', add a placeholder for the missing field to the message
+          let idx = result.val.indexOf(errorMessageSearchString)
+          if (idx !== -1) {
+            idx += errorMessageSearchString.length
+            const field = result.val.slice(idx).split('`').map(x => x?.trim()).filter(x => !!x)[0]
+            this.message[field] = `MY_${field.toLocaleUpperCase()}`
+            this.initialValue = JSON.stringify(this.message, null, 2).replace(`"${this.message[field]}"`, this.message[field])
+          }
+
           this.isValid = false
           this.isError = true
           this.response = formatResult(result)
@@ -71,6 +89,28 @@
         state.contractAddress = result.val.events[0].attributes[0].value
         this.$router.push('/emulator')
       }
+    },
+    async mounted() {
+      state.app = new CWSimulateApp({
+        chainId: 'phoenix-1',
+        bech32Prefix: 'terra'
+      })
+
+      const result = await doInstantiate(this.message)
+      if (result.ok) {
+        state.contractAddress = result.val.events[0].attributes[0].value
+        this.$router.push('/emulator')
+        return
+      }
+
+      // build up partial schema from error message
+      const idx = result.val.indexOf(errorMessageSearchString) + errorMessageSearchString.length
+      const field = result.val.slice(idx).split('`').map(x => x?.trim()).filter(x => !!x)[0]
+
+      const schema = {}
+      schema[field] = `MY_${field.toLocaleUpperCase()}`
+
+      this.initialValue = JSON.stringify(schema, null, 2).replace(`"${schema[field]}"`, schema[field])
     }
   };
 </script>
