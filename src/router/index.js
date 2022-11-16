@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
-import InstantiateView from '../views/InstantiateView.vue'
-import EmulatorView from '../views/EmulatorView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,12 +12,12 @@ const router = createRouter({
     {
       path: '/instantiate',
       name: 'instantiate',
-      component: InstantiateView
+      component: () => import('../views/InstantiateView.vue')
     },
     {
       path: '/emulator',
       name: 'emulator',
-      component: EmulatorView
+      component: () => import('../views/EmulatorView.vue')
     }
   ]
 })
