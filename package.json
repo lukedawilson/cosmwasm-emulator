@@ -1,10 +1,11 @@
 {
   "name": "cosmwasm-emulator",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "./scripts/deploy.sh"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
