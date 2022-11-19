@@ -37,7 +37,10 @@
     }
   }
 
-  const errorMessageSearchString = 'missing field'
+  const missingFieldError = 'missing field'
+  const invalidTypeError = 'Invalid type'
+  const invalidWholeError = 'Error parsing whole'
+  const invalidDigitError = 'invalid digit found in string'
 
   export default {
     components: {
@@ -72,9 +75,9 @@
         const result = await doInstantiate(this.message)
         if (!result.ok) {
           // if the error is 'missing field', add a placeholder for the missing field to the message
-          let idx = result.val.indexOf(errorMessageSearchString)
+          let idx = result.val.indexOf(missingFieldError)
           if (idx !== -1) {
-            idx += errorMessageSearchString.length
+            idx += missingFieldError.length
             const field = result.val.slice(idx).split('`').map(x => x?.trim()).filter(x => !!x)[0]
             this.message[field] = `MY_${field.toLocaleUpperCase()}`
             this.initialValue = JSON.stringify(this.message, null, 2).replace(`"${this.message[field]}"`, this.message[field])
@@ -96,21 +99,64 @@
         bech32Prefix: 'terra'
       })
 
-      const result = await doInstantiate(this.message)
+      let result = await doInstantiate(this.message)
       if (result.ok) {
         state.contractAddress = result.val.events[0].attributes[0].value
         this.$router.push('/emulator')
         return
       }
 
-      // build up partial schema from error message
-      const idx = result.val.indexOf(errorMessageSearchString) + errorMessageSearchString.length
-      const field = result.val.slice(idx).split('`').map(x => x?.trim()).filter(x => !!x)[0]
-
+      // build up schema from error messages
       const schema = {}
-      schema[field] = `MY_${field.toLocaleUpperCase()}`
+      const typeVals = ["STRING", 0.0, 0, "0.0", "0"]
+      let typeIdx = 0, field
 
-      this.initialValue = JSON.stringify(schema, null, 2).replace(`"${schema[field]}"`, schema[field])
+      while (true) {
+        result = await doInstantiate(schema)
+        if (result.ok) {
+          this.initialValue = JSON.stringify(schema, null, 2)
+          state.app = new CWSimulateApp({
+            chainId: 'phoenix-1',
+            bech32Prefix: 'terra'
+          })
+          this.message = schema
+          this.isValid = true
+          return
+        }
+
+        let idx
+        if ((idx = result.val.indexOf(missingFieldError)) !== -1) {
+          typeIdx = 0
+          idx += missingFieldError.length
+          field = result.val.slice(idx).split('`').map(x => x?.trim()).filter(x => !!x)[0]
+
+          schema[field] = typeVals[typeIdx]
+        } else if (result.val.indexOf(invalidTypeError) !== -1 || result.val.indexOf(invalidWholeError) !== -1 || result.val.indexOf(invalidDigitError) !== -1) {
+          if (typeIdx === typeVals.length - 1) {
+            schema[field] = "UNKNOWN_TYPE"
+            this.initialValue = JSON.stringify(schema, null, 2).replace('"UNKNOWN_TYPE"', "UNKNOWN_TYPE")
+            state.app = new CWSimulateApp({
+              chainId: 'phoenix-1',
+              bech32Prefix: 'terra'
+            })
+            this.message = schema
+            this.isValid = true
+            return
+          }
+
+          typeIdx ++
+          schema[field] = typeVals[typeIdx]
+        } else {
+          this.initialValue = JSON.stringify(schema, null, 2)
+          state.app = new CWSimulateApp({
+            chainId: 'phoenix-1',
+            bech32Prefix: 'terra'
+          })
+          this.message = schema
+          this.isValid = true
+          return
+        }
+      }
     }
   };
 </script>

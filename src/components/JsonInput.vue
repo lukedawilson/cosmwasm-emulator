@@ -41,7 +41,7 @@
       }
     },
     updated() {
-      if (this.initialValue && this.initialValue !== this.valueInitHistory[this.valueInitHistory.length - 1]) {
+      if (this.initialValue && JSON.stringify(this.initialValue) !== JSON.stringify(this.valueInitHistory[this.valueInitHistory.length - 1])) {
         this.value = ref(this.initialValue)
         this.valueInitHistory.push(this.initialValue)
       }
