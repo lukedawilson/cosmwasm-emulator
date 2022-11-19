@@ -6,8 +6,8 @@ export const defaultAppConfig = {
   bech32Prefix: 'terra'
 }
 
-const sender = 'terra1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu'
-const funds = []
+export const sender = 'terra1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu'
+export const funds = []
 
 const missingFieldError = 'missing field'
 const invalidTypeError = 'Invalid type'
@@ -71,4 +71,22 @@ export const getMissingFieldName = (result) => {
 
   idx += missingFieldError.length
   return result.val.slice(idx).split('`').map(x => x?.trim()).filter(x => !!x)[0]
+}
+
+export const extractBytecode = (contents) => {
+  if (typeof contents !== 'string')
+    return contents
+
+  const prefix = 'data:application/wasm;base64,'
+  if (!contents.startsWith(prefix))
+    throw new Error(`Malformed WASM source file`)
+
+  const base64 = contents.substring(prefix.length)
+  const binaryString = window.atob(base64)
+  const len = binaryString.length
+  const bytes = new Uint8Array(len)
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binaryString.charCodeAt(i)
+  }
+  return bytes.buffer;
 }

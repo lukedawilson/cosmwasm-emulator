@@ -24,7 +24,7 @@
       </div>
 
       <div class="d-md-flex justify-content-md-end mt-4">
-        <router-link to="/instantiate" class="btn btn-primary" :class="{ disabled: !isValid }">Next: instantiate contract &rsaquo;&rsaquo;</router-link>
+        <button class="btn btn-primary" v-on:click="instantiateOrNavigate" :class="{ disabled: !isValid }">Next: instantiate contract &rsaquo;&rsaquo;</button>
       </div>
     </div>
   </div>
@@ -32,6 +32,8 @@
 
 <script>
   import state from '../state/state'
+  import { CWSimulateApp } from '@terran-one/cw-simulate'
+  import { defaultAppConfig, doInstantiate, extractBytecode } from '../global'
 
   export default {
     data () {
@@ -41,28 +43,18 @@
       }
     },
     methods: {
+      async instantiateOrNavigate() {
+        state.app = new CWSimulateApp(defaultAppConfig)
+
+        const result = await doInstantiate(state.app, {})
+        if (result.ok) {
+          state.contractAddress = result.val.events[0].attributes[0].value
+          this.$router.push('/emulator')
+        } else {
+          this.$router.push('/instantiate')
+        }
+      },
       saveWasm(e) {
-        const base64ToArrayBuffer = (base64) => {
-          const binaryString = window.atob(base64)
-          const len = binaryString.length
-          const bytes = new Uint8Array(len)
-          for (let i = 0; i < len; i++) {
-            bytes[i] = binaryString.charCodeAt(i)
-          }
-          return bytes.buffer;
-        }
-
-        function extractByteCode(contents) {
-          if (typeof contents !== 'string')
-            return contents
-
-          const prefix = 'data:application/wasm;base64,'
-          if (!contents.startsWith(prefix))
-            throw new Error(`Malformed WASM source file`)
-
-          return base64ToArrayBuffer(contents.substring(prefix.length))
-        }
-
         const file = e.target.files[0]
         const reader = new FileReader()
         reader.readAsDataURL(file);
@@ -77,7 +69,7 @@
           }
 
           try {
-            state.wasmBytecode = Buffer.from(extractByteCode(contents));
+            state.wasmBytecode = Buffer.from(extractBytecode(contents));
             this.isValid = true
             this.error = ''
           } catch (e) {

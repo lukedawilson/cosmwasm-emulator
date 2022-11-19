@@ -53,8 +53,6 @@
         }
       },
       async instantiate() {
-        state.app = new CWSimulateApp(defaultAppConfig)
-
         const result = await doInstantiate(state.app, this.message)
         if (!result.ok) {
           // if the error is 'missing field', add a placeholder for the missing field to the message
@@ -75,18 +73,6 @@
       }
     },
     async mounted() {
-      state.app = new CWSimulateApp({
-        chainId: 'phoenix-1',
-        bech32Prefix: 'terra'
-      })
-
-      let result = await doInstantiate(state.app, {})
-      if (result.ok) {
-        state.contractAddress = result.val.events[0].attributes[0].value
-        this.$router.push('/emulator')
-        return
-      }
-
       // build up schema from error messages
       const schema = await buildSchema()
       this.initialValue = JSON.stringify(schema, null, 2).replaceAll('"UNKNOWN_TYPE"', "UNKNOWN_TYPE")
