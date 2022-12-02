@@ -65,8 +65,7 @@
 
     const stateB64 = contractProps.get(btoa('state'))
     if (!stateB64) {
-      console.warn(`Failed to retrieve state. Expected the cw-simulate app object contractStorage to contain a 'state' entry. The app object is`, state.app)
-      return 'Error retrieving state - see browser dev console for details'
+      return '{}'
     }
 
     const decodedStr = atob(stateB64)
