@@ -41,7 +41,7 @@
         <div class="card">
           <div class="card-body">
             <h5 class="card-title">State</h5>
-            <textarea readonly class="form-control text-success" rows="10" v-model="simulationState"></textarea>
+            <textarea readonly class="form-control" rows="10" v-model="simulationState"></textarea>
           </div>
         </div>
       </div>
@@ -55,12 +55,23 @@
   import { sender, funds, formatResult } from '../global'
 
   function formattedState() {
-    const b64 = Array.from(
-      Array.from(
-        state.app.store.get('wasm').get('contractStorage')
-      )[0][1]
-    )[0][1]
-    const simulationState = JSON.parse(atob(b64))
+    const wasm = state.app.store.get('wasm')
+    if (!wasm || !wasm.get) {
+      console.warn(`Failed to retrieve state. Expected the cw-simulate app object store to contain a 'wasm' entry of type Map. The app object is`, state.app)
+      return 'Error retrieving state - see browser dev console for details'
+    }
+
+    const contractAddrToContractProps = new Map(wasm.get('contractStorage'))
+    const contractProps = new Map(contractAddrToContractProps.get(state.contractAddress))
+
+    const stateB64 = contractProps.get(btoa('state'))
+    if (!stateB64) {
+      console.warn(`Failed to retrieve state. Expected the cw-simulate app object contractStorage to contain a 'state' entry. The app object is`, state.app)
+      return 'Error retrieving state - see browser dev console for details'
+    }
+
+    const decodedStr = atob(stateB64)
+    const simulationState = JSON.parse(decodedStr)
     return JSON.stringify(simulationState, null, 2)
   }
 
