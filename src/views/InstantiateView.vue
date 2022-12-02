@@ -23,10 +23,9 @@
 </template>
 
 <script>
-  import { CWSimulateApp } from '@terran-one/cw-simulate'
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { defaultAppConfig, doInstantiate, buildSchema, getMissingFieldName, formatResult } from '../global'
+  import { doInstantiate, buildSchema, getMissingFieldName, formatResult } from '../global'
 
   export default {
     components: {
