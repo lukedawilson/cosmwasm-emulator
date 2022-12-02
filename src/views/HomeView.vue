@@ -33,7 +33,9 @@
 <script>
   import state from '../state/state'
   import { CWSimulateApp } from '@terran-one/cw-simulate'
-  import { defaultAppConfig, doInstantiate, extractBytecode } from '../global'
+  import { defaultAppConfig } from '../utils/defaults'
+  import { doInstantiate } from '../utils/instantiation'
+  import { extractBytecode } from '../utils/wasm'
 
   export default {
     data () {

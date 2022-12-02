@@ -52,7 +52,8 @@
 <script>
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { sender, funds, formatResult } from '../global'
+  import { formatResult } from '../utils/messages'
+  import { sender, funds } from '../utils/defaults'
 
   function formattedState() {
     const wasm = state.app.store.get('wasm')

@@ -25,7 +25,8 @@
 <script>
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { doInstantiate, buildSchema, getMissingFieldName, formatResult } from '../global'
+  import { doInstantiate, buildSchema, getMissingFieldName } from '../utils/instantiation'
+  import { formatResult } from '../utils/messages'
 
   export default {
     components: {
