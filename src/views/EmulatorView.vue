@@ -36,6 +36,16 @@
         </div>
       </div>
     </div>
+    <div class="row">
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">State</h5>
+            <textarea readonly class="form-control text-success" rows="10" v-model="simulationState"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -43,6 +53,16 @@
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
   import { sender, funds, formatResult } from '../global'
+
+  function formattedState() {
+    const b64 = Array.from(
+      Array.from(
+        state.app.store.get('wasm').get('contractStorage')
+      )[0][1]
+    )[0][1]
+    const simulationState = JSON.parse(atob(b64))
+    return JSON.stringify(simulationState, null, 2)
+  }
 
   export default {
     components: {
@@ -61,7 +81,8 @@
           isSuccess: true,
           message: {},
           response: ''
-        }
+        },
+        simulationState: {}
       }
     },
     methods: {
@@ -77,12 +98,16 @@
         const result = await state.app.wasm.executeContract(sender, funds, state.contractAddress, this.execute.message)
         this.execute.response = formatResult(result)
         this.execute.isSuccess = result.ok
+        this.simulationState = formattedState()
       },
       async doQuery() {
         const result = await state.app.wasm.query(state.contractAddress, this.query.message)
         this.query.response = formatResult(result)
         this.query.isSuccess = result.ok
       }
+    },
+    mounted() {
+      this.simulationState = formattedState()
     }
   };
 </script>
