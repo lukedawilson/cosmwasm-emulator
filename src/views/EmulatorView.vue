@@ -1,6 +1,26 @@
 <template>
   <div class="row">
     <div class="col">
+      <div class="form-group row">
+        <label for="your-address" class="col-sm-2 col-form-label">Your address</label>
+        <div class="col-sm-10">
+          <input type="text" readonly class="form-control-plaintext" id="your-address" :value="yourAddress()">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+      <div class="form-group row mb-4">
+        <label for="contract-address" class="col-sm-2 col-form-label">Contract address</label>
+        <div class="col-sm-10">
+          <input type="text" readonly class="form-control-plaintext" id="contract-address" :value="contractAddress()">
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
       <div class="card mb-4">
         <div class="card-body">
           <h5 class="card-title">Execute</h5>
@@ -113,6 +133,12 @@
         const result = await state.app.wasm.query(state.contractAddress, this.query.message)
         this.query.response = formatResult(result)
         this.query.isSuccess = result.ok
+      },
+      yourAddress() {
+        return sender
+      },
+      contractAddress() {
+        return state.contractAddress
       }
     },
     mounted() {
