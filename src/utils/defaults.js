@@ -1,7 +1,7 @@
 export const defaultAppConfig = {
-  chainId: 'phoenix-1',
+  chainId: 'columbus-5',
   bech32Prefix: 'terra'
 }
 
-export const sender = 'terra1hgm0p7khfk85zpz5v0j8wnej3a90w709vhkdfu'
+export const sender = 'terra14z56l0fp2lsf86zy3hty2z47ezkhnthtr9yq76'
 export const funds = []
