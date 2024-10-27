@@ -16,7 +16,12 @@ export const doInstantiate = async (app, message) => {
   }
 }
 
-export const buildSchema = async() => {
+/**
+ * Builds up a schema for an instantiation message by attempting to instantiate a contract with an empty message.
+ * The returned error message contains the missing field and the expected type.
+ * The function iterates until an entire schema has been built up.
+ */
+export const inferInstantiationMessageSchema = async() => {
   const schema = {}
   const typeVals = ["STRING", 0.0, 0, "0.0", "0"]
   let typeIdx = 0, field

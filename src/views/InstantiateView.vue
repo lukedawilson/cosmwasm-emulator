@@ -9,7 +9,7 @@
   </div>
 
   <div class="d-flex justify-content-between bd-highlight mt-4">
-    <router-link to="/" class="btn btn-secondary">&lsaquo;&lsaquo; Back to wasm upload</router-link>
+    <button class="btn btn-secondary" v-on:click="home">&lsaquo;&lsaquo; Back to wasm upload</button>
     <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
   </div>
 
@@ -37,7 +37,7 @@ print(generate_terra_address())</code></pre>
 <script>
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { doInstantiate, buildSchema, getMissingFieldName } from '@/utils/instantiation'
+  import { doInstantiate, inferInstantiationMessageSchema, getMissingFieldName } from '@/utils/instantiation'
   import { formatResult } from '@/utils/messages'
 
   export default {
@@ -63,6 +63,11 @@ print(generate_terra_address())</code></pre>
         } catch {
           this.isValid = false
         }
+
+        state.instantiateMessage = this.message
+      },
+      home() {
+        this.$router.push('/')
       },
       async instantiate() {
         const result = await doInstantiate(state.app, this.message)
@@ -85,10 +90,15 @@ print(generate_terra_address())</code></pre>
       }
     },
     async mounted() {
-      // build up schema from error messages
-      const schema = await buildSchema()
-      this.initialValue = JSON.stringify(schema, null, 2).replaceAll('"UNKNOWN_TYPE"', "UNKNOWN_TYPE")
-      this.message = schema
+      if (state.instantiateMessage) {
+        this.initialValue = JSON.stringify(state.instantiateMessage, null, 2)
+        this.message = state.instantiateMessage
+      } else {
+        const initialValue = await inferInstantiationMessageSchema()
+        this.initialValue = JSON.stringify(initialValue, null, 2).replaceAll('"UNKNOWN_TYPE"', "UNKNOWN_TYPE")
+        this.message = initialValue
+      }
+
       this.isValid = true
     }
   };

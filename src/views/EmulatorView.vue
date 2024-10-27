@@ -64,7 +64,7 @@
   <div class="row">
     <div class="col mt-4">
       <h5 class="bg-dark border-dark m-0 p-2">Log</h5>
-      <textarea wrap="off" readonly class="form-control rounded-0 border-dark text-secondary overflow-scroll" rows="6" v-model="log"></textarea>
+      <textarea wrap="off" readonly class="form-control rounded-0 border-dark text-secondary overflow-auto" rows="6" v-model="log"></textarea>
     </div>
   </div>
 </template>
