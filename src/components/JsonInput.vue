@@ -20,7 +20,7 @@
     components: {
       Codemirror
     },
-    props: ['initialValue'],
+    props: ['initialValue', 'height'],
     data() {
       return {
         value: ref(''),

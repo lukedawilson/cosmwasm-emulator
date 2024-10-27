@@ -12,3 +12,18 @@ Click [here](https://emulator.cosmwasm.net/) to navigate to the site.
 npm install
 npm run dev
 ```
+
+## Deploying
+
+First, ensure you've set up your dev machine with the necessary prerequisites:
+
+```bash
+sudo vim ~/.aws/credentials # then update your AWS credentials with your IAM access key and secret
+sudo apt install vite       # or whatever package manager you use
+```
+
+Then build and deploy the site:
+
+```bash
+npm run deploy
+```

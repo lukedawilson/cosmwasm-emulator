@@ -5,7 +5,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "deploy": "./scripts/deploy.sh"
+    "deploy": "vite build && ./scripts/deploy.sh"
   },
   "dependencies": {
     "@codemirror/lang-json": "^6.0.1",
@@ -15,6 +15,7 @@
     "bootstrap": "^5.2.2",
     "buffer": "^6.0.3",
     "codemirror": "^6.0.1",
+    "highlight.js": "^11.10.0",
     "vue": "^3.2.41",
     "vue-codemirror": "^6.1.1",
     "vue-router": "^4.1.5"

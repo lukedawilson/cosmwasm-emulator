@@ -1,23 +1,35 @@
 <template>
-  <div class="card">
-    <div class="card-body">
-      <h5 class="card-title">Instantiate your contract</h5>
+  <h5 class="bg-dark border-dark m-0 p-2">Instantiation message</h5>
 
-      <p class="card-text">
-        Please enter instantiate message JSON for the contract.
-      </p>
+  <JsonInput v-on:change="handleChange($event)" :initialValue="initialValue" />
 
-      <JsonInput v-on:change="handleChange($event)" :initialValue="initialValue" />
+  <div v-if="isError">
+    <label class="mt-4">Error response:</label>
+    <textarea readonly class="form-control text-danger" rows="10" v-model="response"></textarea>
+  </div>
 
-      <div v-if="isError">
-        <label class="mt-4">Error response:</label>
-        <textarea readonly class="form-control text-danger" rows="10" v-model="response"></textarea>
-      </div>
+  <div class="d-flex justify-content-between bd-highlight mt-4">
+    <router-link to="/" class="btn btn-secondary">&lsaquo;&lsaquo; Back to wasm upload</router-link>
+    <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
+  </div>
 
-      <div class="d-flex justify-content-between bd-highlight mt-4">
-        <router-link to="/" class="btn btn-secondary">&lsaquo;&lsaquo; Back to wasm upload</router-link>
-        <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
-      </div>
+  <div class="mt-4">
+    <h5 class="bg-dark border-dark m-0 p-2">Terra address</h5>
+    <div class="border-dark" v-highlight>
+    <pre class="m-0"><code class="language-python">"""
+You can generate a valid random Terra address with this Python code.
+Remember to install the bech32 library with `pip install bech32`.
+"""
+
+import os
+from bech32 import bech32_encode, convertbits # remember to install bech32 with `pip install bech32`
+
+def generate_terra_address():
+    data = os.urandom(20)
+    words = convertbits(data, 8, 5)
+    return bech32_encode("terra", words)
+
+print(generate_terra_address())</code></pre>
     </div>
   </div>
 </template>
@@ -25,8 +37,8 @@
 <script>
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import { doInstantiate, buildSchema, getMissingFieldName } from '../utils/instantiation'
-  import { formatResult } from '../utils/messages'
+  import { doInstantiate, buildSchema, getMissingFieldName } from '@/utils/instantiation'
+  import { formatResult } from '@/utils/messages'
 
   export default {
     components: {
