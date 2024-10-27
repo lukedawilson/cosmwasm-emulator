@@ -67,13 +67,57 @@
       <textarea wrap="off" readonly class="form-control rounded-0 border-dark text-secondary overflow-auto" rows="6" v-model="log"></textarea>
     </div>
   </div>
+  <div class="row">
+    <div class="col mt-4">
+      <div class="d-md-flex text-center">
+        <button v-on:click="openFileDialog" title="Re-instantiate" class="btn btn-primary d-flex align-items-center me-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+          </svg>
+          &nbsp;&nbsp;Reload contract
+        </button>
+        <div class="d-flex align-items-center text-success ms-3" v-if="showSuccess">Success!</div>
+
+        <input v-on:change="handleFileChange" id="file-input" type="file" accept=".wasm" style="display: none;" />
+      </div>
+    </div>
+  </div>
+
+  <!-- error modal -->
+  <div
+      class="modal fade"
+      id="errorModal"
+      tabindex="-1"
+      aria-labelledby="errorModalLabel"
+      aria-hidden="true"
+  >
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content rounded-3 shadow-lg">
+        <div class="modal-header border-0 p-3">
+          <h5 class="modal-title fw-bold" id="errorModalLabel">Error</h5>
+        </div>
+        <div class="modal-body p-3">
+          <p class="mb-0">{{ errorModalMessage }}</p>
+        </div>
+        <div class="modal-footer border-0 p-3 justify-content-end">
+          <button type="button" class="btn btn-secondary btn-sm" v-on:click="hideModal">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script>
+  import { Modal } from 'bootstrap'
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
-  import {formatResult} from '@/utils/messages'
-  import {funds, sender} from '@/utils/defaults'
+  import { formatResult } from '@/utils/messages'
+  import { funds, sender } from '@/utils/defaults'
+  import { extractBytecode } from "@/utils/wasm"
+  import { doInstantiate } from "@/utils/instantiation"
 
   function formattedState() {
     const wasm = state.app.store.get('wasm')
@@ -118,10 +162,78 @@
         isSuccess: true,
         message: {},
         response: '',
-        simulationState: {}
+        simulationState: {},
+        errorModalMessage: '',
+        showSuccess: false,
+        redirectToInstantiationPage: false,
+        redirectToHomePage: false,
+        modal: null,
       }
     },
     methods: {
+      openFileDialog() {
+        document.getElementById('file-input').click()
+      },
+      handleFileChange(event) {
+        const target = event.target
+        const file = target.files?.[0]
+
+        if (file) {
+          const reader = new FileReader()
+          reader.readAsDataURL(file);
+
+          reader.onload = () => {
+            const contents = reader.result;
+            if (!contents) {
+              this.showModal('Failed to load WASM file.')
+              return;
+            }
+
+            try {
+              state.wasmBytecode = Buffer.from(extractBytecode(contents));
+              doInstantiate(state.app, state.instantiateMessage).then(result => {
+                if (!result.ok) {
+                  this.redirectToInstantiationPage = true;
+                  this.showModal('Contract instantiation failed. You will now be redirected to the instantiation page.')
+                } else {
+                  this.showSuccess = true
+                  setTimeout(() => {
+                    this.showSuccess = false
+                  }, 3000)
+                }
+              })
+            } catch (e) {
+              this.redirectToHomePage = true
+              this.showModal('Invalid WASM file. You will now be redirected to the homepage.')
+              console.error(e.message ?? e)
+            }
+          }
+
+          reader.onerror = e => {
+            this.showModal('Failed to load WASM file.')
+            console.error(e.message ?? e)
+          }
+        }
+
+        target.value = ''
+      },
+      showModal(message) {
+        this.errorModalMessage = message
+        this.modal = new Modal(document.getElementById('errorModal'))
+        this.modal.show()
+      },
+      hideModal() {
+        this.errorModalMessage = null
+        this.modal.hide()
+        this.modal = null
+
+        if (this.redirectToInstantiationPage) {
+          this.$router.push('/instantiate')
+        } else if (this.redirectToHomePage) {
+          state.instantiateMessage = null
+          this.$router.push('/')
+        }
+      },
       handleChange(config, message) {
         try {
           config.message = JSON.parse(message)
@@ -153,3 +265,8 @@
     }
   };
 </script>
+<style>
+  .cm-scroller {
+    min-height: 15em;
+  }
+</style>

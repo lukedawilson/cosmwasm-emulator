@@ -63,8 +63,6 @@ print(generate_terra_address())</code></pre>
         } catch {
           this.isValid = false
         }
-
-        state.instantiateMessage = this.message
       },
       home() {
         this.$router.push('/')
@@ -85,21 +83,35 @@ print(generate_terra_address())</code></pre>
           return
         }
 
+        state.instantiateMessage = this.message
         state.contractAddress = result.val.events[0].attributes[0].value
         this.$router.push('/emulator')
       }
     },
     async mounted() {
-      if (state.instantiateMessage) {
-        this.initialValue = JSON.stringify(state.instantiateMessage, null, 2)
-        this.message = state.instantiateMessage
-      } else {
-        const initialValue = await inferInstantiationMessageSchema()
-        this.initialValue = JSON.stringify(initialValue, null, 2).replaceAll('"UNKNOWN_TYPE"', "UNKNOWN_TYPE")
-        this.message = initialValue
+      const _this = this
+      const init = async () => {
+        if (state.instantiateMessage) {
+          _this.initialValue = JSON.stringify(state.instantiateMessage, null, 2)
+          _this.message = state.instantiateMessage
+        } else {
+          const initialValue = await inferInstantiationMessageSchema()
+          _this.initialValue = JSON.stringify(initialValue, null, 2).replaceAll('"UNKNOWN_TYPE"', "UNKNOWN_TYPE")
+          _this.message = initialValue
+        }
+
+        this.isValid = true
       }
 
-      this.isValid = true
+      window.addEventListener('popstate', async e => {
+        if (e.state.current !== '/instantiate') {
+          return
+        }
+
+        await init()
+      });
+
+      await init()
     }
   };
 </script>

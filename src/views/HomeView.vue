@@ -13,7 +13,7 @@
 
   <h5 class="bg-dark m-0 p-2">Upload contract</h5>
   <div class="border-dark p-2" style="border: 1px solid">
-    <div>Please upload your compiled wasm binary to get started.</div>
+    <div>Please select your compiled wasm binary to get started.</div>
     <input class="form-control mt-3" type="file" id="wasm-binary-file" accept=".wasm" v-on:change="saveWasm">
   </div>
 
@@ -81,6 +81,8 @@
       }
     },
     mounted() {
+      state.instantiateMessage = null
+      state.contractAddress = null
       state.wasmBytecode = []
     }
   };
