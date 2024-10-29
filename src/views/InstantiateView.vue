@@ -1,5 +1,14 @@
 <template>
-  <h5 class="bg-dark border-dark m-0 p-2">Instantiation message</h5>
+  <div class="form-group row">
+    <div class="col-sm-2 d-flex align-items-center fw-bold">Your address</div>
+    <div class="col-sm-10 d-flex align-items-center">{{ yourAddress() }}</div>
+  </div>
+  <div class="form-group row mt-1">
+    <div class="col-sm-2 d-flex align-items-center fw-bold">Chain config</div>
+    <div class="col-sm-10 d-flex align-items-center">{{ chainConfig() }}</div>
+  </div>
+
+  <h5 class="bg-dark border-dark m-0 p-2 mt-4">Instantiation message</h5>
 
   <JsonInput v-on:change="handleChange($event)" :initialValue="initialValue" />
 
@@ -14,7 +23,7 @@
   </div>
 
   <div class="mt-4">
-    <h5 class="bg-dark border-dark m-0 p-2">Terra address</h5>
+    <h5 class="bg-dark border-dark m-0 p-2">Info</h5>
     <div class="border-dark" v-highlight>
     <pre class="m-0"><code class="language-python">"""
 You can generate a valid random Terra address with this Python code.
@@ -39,6 +48,7 @@ print(generate_terra_address())</code></pre>
   import state from '../state/state'
   import { doInstantiate, inferInstantiationMessageSchema, getMissingFieldName } from '@/utils/instantiation'
   import { formatResult } from '@/utils/messages'
+  import { defaultAppConfig, sender } from '@/utils/defaults'
 
   export default {
     components: {
@@ -54,6 +64,12 @@ print(generate_terra_address())</code></pre>
       }
     },
     methods: {
+      yourAddress() {
+        return sender
+      },
+      chainConfig() {
+        return JSON.stringify(defaultAppConfig)
+      },
       handleChange(message) {
         this.isError = false
 

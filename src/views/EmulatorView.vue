@@ -16,6 +16,14 @@
     </div>
   </div>
   <div class="row">
+    <div class="col mt-1">
+      <div class="form-group row">
+        <div class="col-sm-2 d-flex align-items-center fw-bold">Chain config</div>
+        <div class="col-sm-10 d-flex align-items-center">{{ chainConfig() }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <div class="col mt-4">
       <h5 class="bg-dark m-0 p-2">Message</h5>
 
@@ -115,7 +123,7 @@
   import JsonInput from '../components/JsonInput.vue'
   import state from '../state/state'
   import { formatResult } from '@/utils/messages'
-  import { funds, sender } from '@/utils/defaults'
+  import { defaultAppConfig, funds, sender } from '@/utils/defaults'
   import { extractBytecode } from "@/utils/wasm"
   import { doInstantiate } from "@/utils/instantiation"
 
@@ -255,6 +263,9 @@
       },
       yourAddress() {
         return sender
+      },
+      chainConfig() {
+        return JSON.stringify(defaultAppConfig)
       },
       contractAddress() {
         return state.contractAddress
