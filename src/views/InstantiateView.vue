@@ -13,8 +13,11 @@
   <JsonInput v-on:change="handleChange($event)" :initialValue="initialValue" />
 
   <div v-if="isError">
-    <label class="mt-4">Error response:</label>
-    <textarea readonly class="form-control text-danger" rows="10" v-model="response"></textarea>
+    <h5 class="bg-dark border-dark mt-4 mb-0 p-2">Error response</h5>
+    <textarea readonly
+              :rows="this.response?.split('\n').length || 1" wrap="off"
+              class="form-control rounded-0 border-dark text-danger overflow-auto"
+              v-model="response"></textarea>
   </div>
 
   <div class="d-flex justify-content-between bd-highlight mt-4">
@@ -23,22 +26,16 @@
   </div>
 
   <div class="mt-4">
-    <h5 class="bg-dark border-dark m-0 p-2">Info</h5>
-    <div class="border-dark" v-highlight>
-    <pre class="m-0"><code class="language-python">"""
-You can generate a valid random Terra address with this Python code.
-Remember to install the bech32 library with `pip install bech32`.
-"""
-
-import os
-from bech32 import bech32_encode, convertbits # remember to install bech32 with `pip install bech32`
-
-def generate_terra_address():
-    data = os.urandom(20)
-    words = convertbits(data, 8, 5)
-    return bech32_encode("terra", words)
-
-print(generate_terra_address())</code></pre>
+    <h5 class="bg-dark border-dark m-0 p-2">Generate Terra address</h5>
+    <div class="border-dark p-2" style="border: 1px solid">
+      <div>
+        You can generate a random, valid Terra address by clicking the button below.
+        The emulator is entirely offline and does not interact with the Terra network.
+      </div>
+      <div class="d-flex align-items-center">
+        <button class="btn btn-outline-primary mt-3" v-on:click="generateRandomAddress">Generate</button>
+        <div v-if="randomAddress" class="mt-3 ms-3 text-success">{{randomAddress}}</div>
+      </div>
     </div>
   </div>
 </template>
@@ -49,6 +46,7 @@ print(generate_terra_address())</code></pre>
   import { doInstantiate, inferInstantiationMessageSchema, getMissingFieldName } from '@/utils/instantiation'
   import { formatResult } from '@/utils/messages'
   import { defaultAppConfig, sender } from '@/utils/defaults'
+  import generateTerraAddress from '@/utils/generate-terra-address';
 
   export default {
     components: {
@@ -60,10 +58,14 @@ print(generate_terra_address())</code></pre>
         isError: false,
         message: {},
         response: '',
-        initialValue: ''
+        initialValue: '',
+        randomAddress: ''
       }
     },
     methods: {
+      generateRandomAddress() {
+        this.randomAddress = generateTerraAddress()
+      },
       yourAddress() {
         return sender
       },
@@ -95,7 +97,7 @@ print(generate_terra_address())</code></pre>
 
           this.isValid = false
           this.isError = true
-          this.response = formatResult(result)
+          this.response = formatResult(result, 2)
           return
         }
 

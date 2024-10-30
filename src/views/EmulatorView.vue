@@ -1,26 +1,43 @@
 <template>
   <div class="row">
-    <div class="col">
-      <div class="form-group row">
-        <div class="col-sm-2 d-flex align-items-center fw-bold">Your address</div>
-        <div class="col-sm-10 d-flex align-items-center">{{ yourAddress() }}</div>
+    <div class="col-9">
+      <div class="row">
+        <div class="col">
+          <div class="form-group row">
+            <div class="col-sm-2 d-flex align-items-center fw-bold">Your address</div>
+            <div class="col-sm-10 d-flex align-items-center">{{ yourAddress() }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col mt-1">
+          <div class="form-group row">
+            <div class="col-sm-2 d-flex align-items-center fw-bold">Contract address</div>
+            <div class="col-sm-10 d-flex align-items-center">{{ contractAddress() }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col mt-1">
+          <div class="form-group row">
+            <div class="col-sm-2 d-flex align-items-center fw-bold">Chain config</div>
+            <div class="col-sm-10 d-flex align-items-center">{{ chainConfig() }}</div>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="row">
-    <div class="col mt-1">
-      <div class="form-group row">
-        <div class="col-sm-2 d-flex align-items-center fw-bold">Contract address</div>
-        <div class="col-sm-10 d-flex align-items-center">{{ contractAddress() }}</div>
+    <div class="col-3 text-end">
+      <div class="d-inline-block">
+        <button v-on:click="openFileDialog" title="Re-instantiate" class="btn btn-primary d-flex align-items-center mb-2">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
+            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
+          </svg>
+          &nbsp;&nbsp;Reload contract
+        </button>
+        <div class="text-success" v-if="showSuccess">Success!</div>
       </div>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col mt-1">
-      <div class="form-group row">
-        <div class="col-sm-2 d-flex align-items-center fw-bold">Chain config</div>
-        <div class="col-sm-10 d-flex align-items-center">{{ chainConfig() }}</div>
-      </div>
+      <input v-on:change="handleFileChange" id="file-input" type="file" accept=".wasm" style="display: none;" />
     </div>
   </div>
   <div class="row">
@@ -73,22 +90,6 @@
     <div class="col mt-4">
       <h5 class="bg-dark border-dark m-0 p-2">Log</h5>
       <textarea wrap="off" readonly class="form-control rounded-0 border-dark text-secondary overflow-auto" rows="6" v-model="log"></textarea>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col mt-4">
-      <div class="d-md-flex text-center">
-        <button v-on:click="openFileDialog" title="Re-instantiate" class="btn btn-primary d-flex align-items-center me-2">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-clockwise" viewBox="0 0 16 16">
-            <path fill-rule="evenodd" d="M8 3a5 5 0 1 0 4.546 2.914.5.5 0 0 1 .908-.417A6 6 0 1 1 8 2z"/>
-            <path d="M8 4.466V.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384L8.41 4.658A.25.25 0 0 1 8 4.466"/>
-          </svg>
-          &nbsp;&nbsp;Reload contract
-        </button>
-        <div class="d-flex align-items-center text-success ms-3" v-if="showSuccess">Success!</div>
-
-        <input v-on:change="handleFileChange" id="file-input" type="file" accept=".wasm" style="display: none;" />
-      </div>
     </div>
   </div>
 

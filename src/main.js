@@ -5,9 +5,7 @@ import './scss/styles.scss'
 
 import hljs from 'highlight.js/lib/core'
 import 'highlight.js/styles/atom-one-dark.css' // higlight.js theme
-import python from 'highlight.js/lib/languages/python'
 import javascript from 'highlight.js/lib/languages/javascript'
-hljs.registerLanguage('python', python)
 hljs.registerLanguage('javascript', javascript)
 
 const app = createApp(App)
