@@ -1,6 +1,20 @@
-.container {
-  padding-top: 2em;
-  padding-bottom: 2em;
+.container { /* default padding for small screens (mobile) */
+  padding-top: 1em;
+  padding-bottom: 1em;
+}
+
+@media (min-width: 768px) { /* medium screens (tablets) */
+  .container {
+    padding-top: 1.5em;
+    padding-bottom: 1.5em;
+  }
+}
+
+@media (min-width: 992px) { /* large screens (desktops) */
+  .container {
+    padding-top: 2em;
+    padding-bottom: 2em;
+  }
 }
 
 .disabled {

@@ -1,11 +1,13 @@
 <template>
   <div class="form-group row">
     <div class="col-sm-2 d-flex align-items-center fw-bold">Your address</div>
-    <div class="col-sm-10 d-flex align-items-center">{{ yourAddress() }}</div>
+    <div class="col-sm-10 d-flex align-items-center">
+      <input type="text" :value="yourAddress()" class="form-control-plaintext text-primary" readonly />
+    </div>
   </div>
   <div class="form-group row mt-1">
     <div class="col-sm-2 d-flex align-items-center fw-bold">Chain config</div>
-    <div class="col-sm-10 d-flex align-items-center">{{ chainConfig() }}</div>
+    <div class="col-sm-10 mt-2 d-flex align-items-center">{{ chainConfig() }}</div>
   </div>
 
   <h5 class="bg-dark border-dark m-0 p-2 mt-4">Instantiation message</h5>
@@ -21,8 +23,8 @@
   </div>
 
   <div class="d-flex justify-content-between bd-highlight mt-4">
-    <button class="btn btn-secondary" v-on:click="home">&lsaquo;&lsaquo; Back to wasm upload</button>
-    <button class="btn btn-primary" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
+    <button class="btn btn-secondary me-1" v-on:click="home">&lsaquo;&lsaquo; Back to wasm upload</button>
+    <button class="btn btn-primary ms-1" v-on:click="instantiate" :class="{ disabled: !isValid }">Next: go to emulator &rsaquo;&rsaquo;</button>
   </div>
 
   <div class="mt-4">
@@ -34,7 +36,7 @@
       </div>
       <div class="d-flex align-items-center">
         <button class="btn btn-outline-primary mt-3" v-on:click="generateRandomAddress">Generate</button>
-        <div v-if="randomAddress" class="mt-3 ms-3 text-success">{{randomAddress}}</div>
+        <input v-if="randomAddress" type="text" :value="randomAddress" class="form-control-plaintext text-success mt-3 ms-3" readonly />
       </div>
     </div>
   </div>
